@@ -18,6 +18,10 @@ export default function Login() {
     const router = useRouter()
 
 
+    console.log(type);
+    
+
+
 
 
     const handleChange = (text, index) => {
@@ -39,11 +43,13 @@ export default function Login() {
     const sendOtp = async () => {
 
         try {
-            const response = await API.post("/auth/sendotp", { mobile });
+            const response = await API.post("/auth/sendotp", { mobile, type });
+            if (response.data?.message == "user already exists"){ setError("User Already Exists,Please Login"); return }            
             if (response?.data?.message === "Otp Sent Successfully") setOpen(true)
             setError(null)
         } catch (error) {
-            setError(error.message);
+            setError(error);
+
         }
 
 
