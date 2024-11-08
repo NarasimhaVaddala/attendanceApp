@@ -1,22 +1,26 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, isRejectedWithValue } from "@reduxjs/toolkit";
+
 
 const initialState = {
     loading:false,
+    error:"",
+    message:"",
+
 }
+
+
 
 export const authSlice = createSlice({
     name:"auth",
     initialState,
     reducers:{
         login:(state , action)=>{
-
+                
         }
     },
 
 
-    extraReducers:(builder)=>{
-        
-    }
+ 
 })
 
 

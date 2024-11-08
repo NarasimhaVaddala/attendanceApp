@@ -23,7 +23,7 @@ const index = () => {
               resizeMode="contain"
             />
 
-              <CustomBtn text="PROCEED TO LOGIN"  onclick={()=>router.push("Home")}/>
+              <CustomBtn text="PROCEED TO LOGIN"  onclick={()=>router.push("Login")}/>
      
           
           </View>

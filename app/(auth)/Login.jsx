@@ -34,7 +34,9 @@ export default function Login() {
 
             <CustomBtn text="Login" />
            
-            <Text className="font-pregular text-white text-center">Don't Have an account? <Link href="SignUp" 
+            <Text className="font-pregular text-white text-center">Don't Have an account? 
+              
+              <Link href={{pathname:"Otp" , params: { type:"new" }}} 
             className=" font-pregular text-[#FF6600]">Sign Up</Link>
 
             </Text>

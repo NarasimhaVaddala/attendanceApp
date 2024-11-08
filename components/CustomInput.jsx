@@ -9,6 +9,8 @@ export default function CustomInput({
   value,
   setvalue,
   password,
+  disabled,
+  number
 }) {
   const [pass, showPass] = useState(true);
   const [isFocused, setIsFocused] = useState(false); // State for tracking focus
@@ -20,9 +22,11 @@ export default function CustomInput({
     <View className="w-full gap-2 relative">
       <Text className="text-white font-ubold">{label}</Text>
       <TextInput
+        keyboardType={number && "number-pad"}
+        editable={!disabled}
         value={value}
         onChangeText={setvalue}
-        className="rounded-xl h-16 w-full p-4 text-white"
+        className={`rounded-xl h-16 w-full p-4 text-white ${disabled ? "bg-[#808080]" :""}`}
         placeholder={placeholder}
         placeholderTextColor="#808080"
         secureTextEntry={pass && password}
