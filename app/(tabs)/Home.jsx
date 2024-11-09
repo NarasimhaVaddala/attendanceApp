@@ -1,18 +1,40 @@
 import { View, ScrollView, Text, StyleSheet } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Header from "../../components/Header";
 import { Picker } from "@react-native-picker/picker";
 import { TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
+import { API } from "../../constants/url";
+import { getToken } from "../../constants/getsettoken"
+import {checkIn, checkOut}  from "../../constants/checkinout"
 export default function Home() {
-  const [checkin, setcheckin] = useState(true);
+  const [data, setData] = useState(true);
+
+  const getUser = async () => {
+    try {
+      const token = await getToken()
+      const response = await API.get('/user/getuser', {
+        headers: { token }
+      })
+
+      setData(response?.data)
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    getUser()
+  }, [])
+
+
   return (
     <SafeAreaView className="p-4 bg-primary">
       <ScrollView contentContainerStyle={{ height: "100%" }}>
         <Header />
         <View className="flex-1 mt-4">
-          <Text className="text-white font-pbold text-4xl">Hi Narasimha</Text>
+          <Text className="text-white font-pbold text-4xl">Hi {data?.name}</Text>
           <Text className="text-white font-pregular mt-4">
             Lets be Productive Today !
           </Text>
@@ -63,7 +85,7 @@ export default function Home() {
               <Icon name="check-circle" size={24} color="green" />
             </View>
 
-            <TouchableOpacity className="text-center font-pbold text-sm mt-4 p-4 rounded-lg bg-[#FF6600] flex-row items-center justify-center gap-4">
+            <TouchableOpacity onPress={checkOut} className="text-center font-pbold text-sm mt-4 p-4 rounded-lg bg-[#FF6600] flex-row items-center justify-center gap-4">
               <Text className="text-center font-pbold text-xl text-white">
                 Check Out
               </Text>

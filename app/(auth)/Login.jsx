@@ -3,55 +3,30 @@ import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CustomInput from "../../components/CustomInput";
 import CustomBtn from "../../components/CustomBtn";
-import { Link } from "expo-router";
-import {API} from "../../constants/url"
-
-
+import { Link, router } from "expo-router";
+import { API } from "../../constants/url"
+import {setToken} from "../../constants/getsettoken"
 
 export default function Login() {
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState('')
 
+  const loginUser = async () => {
+    
 
-  const getMacAddress = async () => {
     try {
-      const macAddress = await DeviceInfo.getMacAddress(); 
-      console.log("MAC Address:", macAddress);
-    } catch (error) {
-      console.log("Error fetching MAC Address:", error);
-    }
-  };
-
-
-  useEffect(()=>{
-    getMacAddress()
-  },[])
-
-  const result = multiply(3, 7);
-  console.log(result);
-  
-  const [imei, setImei] = useState('');
-
-  useEffect(() => {
-    // Fetch IMEI when the component mounts
-    IMEI.getImei().then((imeiNumbers) => {
-      console.log(imeiNumbers);
+      const response = await API.post("/auth/login", { userId, password })
+      if (response.data?.message == "user not found") setError("user not found")
+      if (response.data?.token){
+         await setToken(response.data.token);
+         router.push("Home")
+      }
       
-      setImei(imeiNumbers[0]);  // Store the first IMEI (for dual-SIM phones)
-    }).catch(error => {
-      console.error("Failed to get IMEI:", error);
-    });
-  }, []);
-
-
-  const loginUser = async ()=>{
-
-    try {      
-        const response = await API.post("/auth/login" , {userId, password})
-        if(response.data?.message == "user not found") set
     } catch (error) {
-      
+      console.log(error);      
+      if(error.response?.data?.message == "user not found") setError("User Not Found")
+
     }
 
   }
@@ -77,14 +52,14 @@ export default function Login() {
               password={true}
             />
 
-           <Link href="ForgotPassword" className="text-white font-pregular self-end">Forgot Password ?</Link>
+            <Link href="ForgotPassword" className="text-white font-pregular self-end">Forgot Password ?</Link>
 
-            <CustomBtn text="Login" />
-           
-            <Text className="font-pregular text-white text-center">Don't Have an account? 
-              
-              <Link href={{pathname:"Otp" , params: { type:"new" }}} 
-            className=" font-pregular text-[#FF6600]">Sign Up</Link>
+            <CustomBtn text="Login" onclick={loginUser} />
+
+            <Text className="font-pregular text-white text-center">Don't Have an account?
+
+              <Link href={{ pathname: "Otp", params: { type: "new" } }}
+                className=" font-pregular text-[#FF6600]">Sign Up</Link>
 
             </Text>
           </View>
