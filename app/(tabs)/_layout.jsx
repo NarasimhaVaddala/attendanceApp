@@ -1,4 +1,4 @@
-import { Tabs } from "expo-router";
+import { router, Tabs } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Text, View, Alert } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -12,6 +12,8 @@ import {
   DrawerItem,
   DrawerItemList,
 } from "@react-navigation/drawer";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { removeToken } from "../../constants/getsettoken";
 
 const Drawer = createDrawerNavigator();
 
@@ -32,9 +34,10 @@ const TabIcon = ({ icon, color, focused, name }) => {
 
 // Custom Drawer Content with Label-First Icon-Next Logout Button
 const CustomDrawerContent = (props) => {
-  const handleLogout = () => {
+  const handleLogout = async() => {
+    const data = await removeToken()
     Alert.alert("Logout", "You have been logged out!");
-    // props.navigation.replace("Login"); // Uncomment to navigate to login screen
+    router.push("/Login")
   };
 
   return (

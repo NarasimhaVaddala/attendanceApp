@@ -20,4 +20,14 @@ export const setToken = async (token) => {
       console.error('Error retrieving token from getsettoken :', error);
     }
   };
+
+
+  export const removeToken = async ()=>{
+    try {
+      AsyncStorage.removeItem("userToken")
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
   

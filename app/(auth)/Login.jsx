@@ -4,32 +4,39 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import CustomInput from "../../components/CustomInput";
 import CustomBtn from "../../components/CustomBtn";
 import { Link, router } from "expo-router";
-import { API } from "../../constants/url"
-import {setToken} from "../../constants/getsettoken"
+import { API } from "../../constants/url";
+import { getToken, setToken } from "../../constants/getsettoken";
 
 export default function Login() {
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState('')
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    (async function () {
+      const token = await getToken();
+      if (token) router.push("Home");
+    })()
+  }, []);
 
   const loginUser = async () => {
-    
-
     try {
-      const response = await API.post("/auth/login", { userId, password })
-      if (response.data?.message == "user not found") setError("user not found")
-      if (response.data?.token){
-         await setToken(response.data.token);
-         router.push("Home")
+      const response = await API.post("/auth/login", { userId, password });
+      if (response.data?.message == "user not found")
+        setError("user not found");
+      if (response.data?.token) {
+        await setToken(response.data.token);
+        router.push("Home");
       }
-      
     } catch (error) {
-      console.log(error);      
-      if(error.response?.data?.message == "user not found") setError("User Not Found")
-
+      console.log(error);
+      if (error.response?.data?.message == "user not found")
+        setError("User Not Found");
+      else if (error.message == "Request failed with status code 401")
+        setError("Invalid credentials");
+      else setError(error.message);
     }
-
-  }
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-primary">
@@ -52,15 +59,27 @@ export default function Login() {
               password={true}
             />
 
-            <Link href="ForgotPassword" className="text-white font-pregular self-end">Forgot Password ?</Link>
+            {error && (
+              <Text className="text-red-500 font-pregular">{error}</Text>
+            )}
+
+            <Link
+              href="ForgotPassword"
+              className="text-white font-pregular self-end"
+            >
+              Forgot Password ?
+            </Link>
 
             <CustomBtn text="Login" onclick={loginUser} />
 
-            <Text className="font-pregular text-white text-center">Don't Have an account?
-
-              <Link href={{ pathname: "Otp", params: { type: "new" } }}
-                className=" font-pregular text-[#FF6600]">Sign Up</Link>
-
+            <Text className="font-pregular text-white text-center">
+              Don't Have an account?
+              <Link
+                href={{ pathname: "Otp", params: { type: "new" } }}
+                className=" font-pregular text-[#FF6600]"
+              >
+                Sign Up
+              </Link>
             </Text>
           </View>
         </View>

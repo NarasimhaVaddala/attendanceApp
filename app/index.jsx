@@ -5,8 +5,17 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import * as Font from "expo-font";
 import CustomBtn from "../components/CustomBtn";
 import { Link, router } from "expo-router";
+import { getToken } from "../constants/getsettoken";
 
 const index = () => {
+
+  useEffect(() => {
+    (async function () {
+      const token = await getToken();
+      if (token) router.push("Home");
+      if(!token) router.push("Login")
+    })()
+  }, []);
   return (
     <>
       
