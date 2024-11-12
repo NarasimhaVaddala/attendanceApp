@@ -4,11 +4,17 @@ import Header from "../../components/Header";
 import CustomBtn from "../../components/CustomBtn";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { TouchableOpacity } from "react-native";
-
-const imgUrl =
-  "https://plus.unsplash.com/premium_photo-1694557636097-5969bae91ba8?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+import { useAttendance } from "../../constants/useAttendance";
+import { imageUrl } from "../../constants/url";
+import { router } from "expo-router";
 
 export default function Profile() {
+  const { data, attendance, checkedIn, checkedOut, checkIn, checkOut } =
+    useAttendance();
+
+  console.log(data);
+  console.log(`${imageUrl}/${data?.image}`);
+
   return (
     <SafeAreaView className="p-4 bg-primary">
       <ScrollView contentContainerStyle={{ height: "100%" }}>
@@ -16,29 +22,33 @@ export default function Profile() {
         <View className="flex-1 items-center justify-center">
           <View className="h-[250px] bg-[#f5f5f5e3] w-full relative rounded-xl">
             <Image
-              source={{ uri: imgUrl }}
+              source={{ uri: `${imageUrl}${data?.image}` }}
               className="h-[100px] w-[100px] rounded-full absolute -top-16 left-[35%] border-4 border-[#FF6600] object-cover"
             />
 
             <View className="relative top-5 p-4 justify-evenly h-full">
               <Text className="font-psbold text-2xl text-center">
-                Vaddala Narasimha
+                {data?.name}
               </Text>
 
               <View className="flex-row justify-between mt-4">
                 <Text className="font-pregular text-sm text-center">
-                  Intern ⁌
+                  {data?.roleType} ⁌
                 </Text>
                 <Text className="font-pregular text-sm text-center">
-                  Javascript Developer ⁌
+                  {data?.role} ⁌
                 </Text>
                 <Text className="font-pregular text-sm text-center">
-                  Joined 2023
+                  Joined{" "}
+                  {new Date(data?.joinDate).toLocaleString("default", {
+                    month: "short",
+                    year: "numeric",
+                  })}
                 </Text>
               </View>
 
               <Text className="font-pregular text-xs text-center">
-                +91 8978106223 | vaddalanarasimha@gmail.com
+                +91 {data?.mobile} | {data?.email}
               </Text>
 
               <View className="mt-4">
@@ -58,7 +68,7 @@ export default function Profile() {
               }}
             >
               <Text className="font-pbold">Checked In</Text>
-              <Icon name="check-circle" size={24} color="green" />
+              {checkedIn ? <Icon name="check-circle" size={24} color="green" /> : <Icon name="times-circle" size={24} color="red" />}
             </View>
 
             {/* Second Section - Checked Out */}
@@ -71,17 +81,17 @@ export default function Profile() {
               }}
             >
               <Text className="font-pbold">Checked Out</Text>
-              <Icon name="times-circle" size={24} color="red" />
+              {checkedOut ? <Icon name="check-circle" size={24} color="green" /> : <Icon name="times-circle" size={24} color="red" />}
             </View>
 
             {/* Third Section - No of Hours */}
             <View className="gap-2 items-center justify-center">
               <Text className="font-pbold">No of Hours</Text>
-              <Text className="font-pbold">NA</Text>
+              <Text className="font-pbold">{attendance?.noOfHours ? attendance?.noOfHours:"NA" }</Text>
             </View>
           </View>
 
-          <TouchableOpacity className="bg-[#f5f5f5e3] w-full mt-4 flex-row justify-between items-center p-6 rounded-xl">
+          <TouchableOpacity className="bg-[#f5f5f5e3] w-full mt-4 flex-row justify-between items-center p-6 rounded-xl" onPress={()=>router.push("History")}>
             <View className="flex-row items-center gap-4">
               <Icon name="book" size={24} color="#000" />
               <Text className="font-psbold">View Your Attendance History</Text>

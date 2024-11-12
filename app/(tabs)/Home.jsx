@@ -1,91 +1,29 @@
-import { View, ScrollView, Text, StyleSheet } from "react-native";
+import { View, ScrollView, Text } from "react-native";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Header from "../../components/Header";
 import { TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { getToken } from "../../constants/getsettoken";
-import { checkIn, checkOut, getTodayAttendance } from "../../constants/checkinout";
+import { useAttendance } from "../../constants/useAttendance";
 
 export default function Home() {
-  const [data, setData] = useState(null);
-  const [todayAttendance, setTodayAttendance] = useState(null);
-  const [checkInTime, setCheckInTime] = useState(null);
-  const [checkOutTime, setCheckOutTime] = useState(null);
-  const [workedHours, setWorkedHours] = useState(null);
-  const [openCheckIn, setOpenCheckIn] = useState(false);
-  const [checkedIn, setCheckedIn] = useState(false);
-  const [checkedOut, setCheckedOut] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
-
-  const getUser = async () => {
-    try {
-      const token = await getToken();
-      const response = await API.get("/user/getuser", {
-        headers: { token },
-      });
-      setData(response?.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const handleCheckIn = async () => {
-    const response = await checkIn();
-    if (response) {
-      setCheckedIn(true);
-      setOpenCheckIn(false);
-      setTodayAttendance(response)
-      setCheckInTime(todayAttendance.checkIn)
-    } else {
-      alert(response.message); // Display error message if check-in fails
-    }
-  };
-
-  const handleCheckOut = async () => {
-    const response = await checkOut(todayAttendance._id);
-    if (response.success) {
-      setCheckedOut(true);
-      getTodayAttendance(); // Refresh today's attendance
-      setCheckOutTime(todayAttendance.checkOut)
-
-    } else {
-      alert(response.message); // Display error message if check-out fails
-    }
-  };
-
+  const { data, attendance, checkedIn, checkedOut, checkIn, checkOut } = useAttendance();
 
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
-    
-    return () => clearInterval(timer); // Clean up the timer when the component unmounts
+    return () => clearInterval(timer);
   }, []);
 
   const formatTime = (date) => {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    return date.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
   };
-
-
-  useEffect(() => {
-    (async function () {
-      getUser();
-      const attendance = await getTodayAttendance();
-      if (attendance === "not found") {
-        setOpenCheckIn(true);
-      } else {
-        setTodayAttendance(attendance);
-        setCheckedIn(true);
-        setCheckInTime(attendance.checkIn);
-        if (attendance.checkOut) {
-          setCheckedOut(true);
-          setCheckOutTime(attendance.checkOut);
-          setWorkedHours(attendance.noOfHours); // Use backend-calculated hours
-        }
-      }
-    })();
-  }, []);
 
   return (
     <SafeAreaView className="p-4 bg-primary">
@@ -122,42 +60,43 @@ export default function Home() {
               {new Date().toDateString()}
             </Text>
 
-
-            {!checkOutTime && <View className="flex-row justify-between gap-x-2">
-              <Text className="text-center w-[100%] font-pbold text-xl p-4 rounded-lg bg-[#f5f5f5d2]">
-                {formatTime(currentTime)}
-              </Text>
-            </View>}
-
-            {checkInTime && (
-              <View className="flex-row justify-center items-center bg-[#f5f5f5d2] mt-4 rounded-lg ">
-              <Text className="text-center font-psbold text-xl  p-4 ">
-                Check In {checkInTime}
-              </Text>
-              <Icon name="check-circle" size={24} color="green" />
-            </View>
-            )}
-
-            {checkOutTime && (
-             <View className="flex-row justify-center items-center bg-[#f5f5f5d2] mt-4 rounded-lg ">
-             <Text className="text-center font-psbold text-xl  p-4 ">
-               Check Out {checkOutTime}
-             </Text>
-             <Icon name="check-circle" size={24} color="green" />
-           </View>
-            )}
-
-            {workedHours && (
-              <View className="flex-row justify-between gap-x-2 mt-4">
+            {!checkedOut && (
+              <View className="flex-row justify-between gap-x-2">
                 <Text className="text-center w-[100%] font-pbold text-xl p-4 rounded-lg bg-[#f5f5f5d2]">
-                  Hours Worked: {workedHours}
+                  {formatTime(currentTime)}
                 </Text>
               </View>
             )}
 
-            {openCheckIn && !checkedIn && (
+            {checkedIn && (
+              <View className="flex-row justify-center items-center bg-[#f5f5f5d2] mt-4 rounded-lg">
+                <Text className="text-center font-psbold text-xl p-4">
+                  Check In {attendance?.checkIn}
+                </Text>
+                <Icon name="check-circle" size={24} color="green" />
+              </View>
+            )}
+
+            {checkedOut && (
+              <View className="flex-row justify-center items-center bg-[#f5f5f5d2] mt-4 rounded-lg">
+                <Text className="text-center font-psbold text-xl p-4">
+                  Check Out {attendance.checkOut}
+                </Text>
+                <Icon name="check-circle" size={24} color="green" />
+              </View>
+            )}
+
+            {attendance.noOfHours && (
+              <View className="flex-row justify-between gap-x-2 mt-4">
+                <Text className="text-center w-[100%] font-pbold text-xl p-4 rounded-lg bg-[#f5f5f5d2]">
+                  Hours Worked: {attendance.noOfHours}
+                </Text>
+              </View>
+            )}
+
+            {!checkedIn && (
               <TouchableOpacity
-                onPress={handleCheckIn}
+                onPress={checkIn}
                 className="w-[100%] mt-4 p-4 rounded-lg bg-[#FF6600] flex-row items-center justify-center gap-2"
               >
                 <Text className="text-center font-pbold text-xl text-white">
@@ -167,9 +106,9 @@ export default function Home() {
               </TouchableOpacity>
             )}
 
-            {checkedIn && !checkedOut && (
+            {(checkedIn && !checkedOut) && (
               <TouchableOpacity
-                onPress={handleCheckOut}
+                onPress={() => checkOut(attendance._id)}
                 className="text-center font-pbold text-sm mt-4 p-4 rounded-lg bg-[#FF6600] flex-row items-center justify-center gap-4"
               >
                 <Text className="text-center font-pbold text-xl text-white">
