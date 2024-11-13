@@ -6,9 +6,9 @@ import { TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useAttendance } from "../../constants/useAttendance";
 
-export default function Home() {
+// Separate component for displaying current time
+function TimeDisplay() {
   const [currentTime, setCurrentTime] = useState(new Date());
-  const { data, attendance, checkedIn, checkedOut, checkIn, checkOut } = useAttendance();
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -24,6 +24,16 @@ export default function Home() {
       second: "2-digit",
     });
   };
+
+  return (
+    <Text className="text-center w-[100%] font-pbold text-xl p-4 rounded-lg bg-[#f5f5f5d2]">
+      {formatTime(currentTime)}
+    </Text>
+  );
+}
+
+export default function Home() {
+  const { data, attendance, checkedIn, checkedOut, checkIn, checkOut } = useAttendance();
 
   return (
     <SafeAreaView className="p-4 bg-primary">
@@ -62,9 +72,7 @@ export default function Home() {
 
             {!checkedOut && (
               <View className="flex-row justify-between gap-x-2">
-                <Text className="text-center w-[100%] font-pbold text-xl p-4 rounded-lg bg-[#f5f5f5d2]">
-                  {formatTime(currentTime)}
-                </Text>
+                <TimeDisplay />
               </View>
             )}
 

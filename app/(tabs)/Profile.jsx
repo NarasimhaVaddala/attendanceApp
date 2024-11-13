@@ -52,7 +52,7 @@ export default function Profile() {
               </Text>
 
               <View className="mt-4">
-                <CustomBtn text="Edit Profile" icon="chevron-right" />
+                <CustomBtn text="Edit Profile" icon="chevron-right" onclick={()=>router.push("EditProfile")} />
               </View>
             </View>
           </View>

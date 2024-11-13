@@ -14,6 +14,7 @@ import {
 } from "@react-navigation/drawer";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { removeToken } from "../../constants/getsettoken";
+import EditProfile from "./EditProfile";
 
 const Drawer = createDrawerNavigator();
 
@@ -80,6 +81,7 @@ const AuthLayout = () => {
         <Drawer.Screen name="Home" component={Home} />
         <Drawer.Screen name="Profile" component={Profile} />
         <Drawer.Screen name="History" component={History} />
+        <Drawer.Screen name="EditProfile" component={EditProfile} />
       </Drawer.Navigator>
     </>
   );

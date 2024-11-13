@@ -27,7 +27,7 @@ export default function History() {
       {/* <ScrollView contentContainerStyle={{ height: "100%" }}> */}
         <Header />
         <View className="flex-1 mt-4">
-          <Text className="text-white font-pbold text-4xl">Hi Narasimha</Text>
+          <Text className="text-white font-pbold text-4xl">Hi {attendanceHistory[0]?.name}</Text>
           <Text className="text-white font-pregular mt-4">
             Your Attendance History
           </Text>
